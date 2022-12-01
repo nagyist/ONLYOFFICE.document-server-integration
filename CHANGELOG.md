@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: onRequestOpen
 - nodejs: link in referenceData
 - nodejs: wopi editnew action for exisiting file
 - nodejs: fix wopi actions after restart
