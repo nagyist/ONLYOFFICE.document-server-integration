@@ -29,6 +29,7 @@ const config = require('config');
 const configServer = config.get('server');
 const storageFolder = configServer.get("storageFolder");
 const mime = require("mime");
+const urlModule = require("url");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
@@ -496,6 +497,20 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
         }
     }
 
+    if (!fileName && !!req.body.link) {
+        if (req.body.link.indexOf(req.docManager.curUserHostAddress()) != -1) {
+            result({ "error": "You do not have access to this site" });
+            return;
+        }
+
+        var urlObj = urlModule.parse(req.body.link, true);
+        var fileName = urlObj.query.fileName;
+        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
+            result({ "error": "File is not exist" });
+            return;
+        }
+    }
+
     if (!fileName && !!req.body.path) {
         var path = fileUtility.getFileName(req.body.path);
 
@@ -517,6 +532,7 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
             fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
             instanceId: req.docManager.getServerUrl()
         },
+        link: req.docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName),
         path: fileName,
     };
 
