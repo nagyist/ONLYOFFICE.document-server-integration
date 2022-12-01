@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: setUsers for region protection
 - anonymous can't change viewer to edit
 - referenceData
 - anonymous can't protect file
