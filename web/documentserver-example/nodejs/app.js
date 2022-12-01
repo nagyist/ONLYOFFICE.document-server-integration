@@ -753,6 +753,39 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
     }
 });
 
+app.get("/config", function (req, res) {
+    try {
+        req.docManager = new docManager(req, res);
+        var fileName = fileUtility.getFileName(req.query.fileName);
+
+        // file config data
+        var data = {
+            document: {
+                directUrl: req.docManager.getDownloadUrl(fileName),
+                key: req.docManager.getKey(fileName),
+                title: fileName,
+                url: req.docManager.getDownloadUrl(fileName, true)
+            },
+            editorConfig: {
+                callbackUrl: req.docManager.getCallback(fileName)
+            }
+        };
+
+        if (cfgSignatureEnable) {
+            data.token = jwt.sign(data, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});  // sign token with given data using signature secret
+        }
+
+        res.setHeader("Content-Type", "application/json");
+        res.write(JSON.stringify(data));
+    }
+    catch (ex) {
+        console.log(ex);
+        res.status(500);
+        res.write("error");
+    }
+    res.end();
+});
+
 app.get("/editor", function (req, res) {  // define a handler for editing document
     try {
 

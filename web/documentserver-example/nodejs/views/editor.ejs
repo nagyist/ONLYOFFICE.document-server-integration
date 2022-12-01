@@ -186,6 +186,16 @@
             }
         };
 
+        var onRequestRefreshFile = function(event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "config?fileName=" + encodeURIComponent(config.document.title));
+            xhr.send();
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.refreshFile(JSON.parse(xhr.responseText));
+            };
+        };
+
         config = {
             <%- include("config") %>
         };
@@ -200,6 +210,7 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestRefreshFile": onRequestRefreshFile,
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
